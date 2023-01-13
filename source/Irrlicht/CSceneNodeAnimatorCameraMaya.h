@@ -72,6 +72,12 @@ namespace scene
 		//! Returns the minimal distance to the camera target for zoom
 		virtual f32 getTargetMinDistance() const IRR_OVERRIDE;
 
+		virtual f32 getRotX() const IRR_OVERRIDE;
+		virtual void setRotX(f32 distance) IRR_OVERRIDE;
+
+		virtual f32 getRotY() const IRR_OVERRIDE;
+		virtual void setRotY(f32 distance) IRR_OVERRIDE;
+
 		//! This animator will receive events when attached to the active camera
 		virtual bool isEventReceiverEnabled() const IRR_OVERRIDE
 		{

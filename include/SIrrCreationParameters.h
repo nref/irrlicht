@@ -28,6 +28,7 @@ namespace irr
 			Bits(32),
 			ZBufferBits(24),
 			Fullscreen(false),
+			ExitOnClose(true),
 			WindowResizable(2),
 			Stencilbuffer(true),
 			Vsync(false),
@@ -65,6 +66,7 @@ namespace irr
 			Bits = other.Bits;
 			ZBufferBits = other.ZBufferBits;
 			Fullscreen = other.Fullscreen;
+			ExitOnClose = other.ExitOnClose;
 			WindowResizable = other.WindowResizable;
 			Stencilbuffer = other.Stencilbuffer;
 			Vsync = other.Vsync;
@@ -124,6 +126,10 @@ namespace irr
 		Values: 0 = not resizable, 1 = resizable, 2 = system decides default itself
 		Default: 2*/
 		u8 WindowResizable;
+
+		//! If true, closeDevice will exit the application. Else, only the window will be closed.
+		/** Default is true. Set to false if multiple devices are created and closed in the same application. */
+		bool ExitOnClose;
 
 		//! Specifies if the stencil buffer should be enabled.
 		/** Set this to true, if you want the engine be able to draw

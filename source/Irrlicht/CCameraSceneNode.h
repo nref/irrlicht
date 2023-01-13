@@ -95,6 +95,10 @@ namespace scene
 		//! \return Field of view of the camera
 		virtual f32 getFOV() const IRR_OVERRIDE;
 
+		//! Return whether or not this camera uses a left-handed projection
+		//! \return True if this camera uses a left-handed projection, else false.
+		virtual bool getUseLeftHandProjection() const IRR_OVERRIDE;
+
 		//! Sets the value of the near clipping plane. (default: 1.0f)
 		virtual void setNearValue(f32 zn) IRR_OVERRIDE;
 
@@ -106,6 +110,10 @@ namespace scene
 
 		//! Sets the field of view (Default: PI / 3.5f)
 		virtual void setFOV(f32 fovy) IRR_OVERRIDE;
+
+		//! Set to true to use a left-handed projection matrix.
+		//! Set to false to use a right-handed projection matrix.
+		virtual void setUseLeftHandProjection(bool use) IRR_OVERRIDE;
 
 		//! PreRender event
 		virtual void OnRegisterSceneNode() IRR_OVERRIDE;
@@ -168,6 +176,8 @@ namespace scene
 
 		bool InputReceiverEnabled;
 		bool TargetAndRotationAreBound;
+
+		bool UseLeftHandProjection; // true: Use a left-handed projection matrix; false: use a right-handed projection matrix.
 
 		bool HasD3DStyleProjectionMatrix;	// true: projection from 0 to w; false: -w to w
 	};

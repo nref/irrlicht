@@ -177,14 +177,19 @@ void CSceneNodeAnimatorCameraMaya::animateNode(ISceneNode *node, u32 timeMs)
 	const core::vector3df target = camera->getTarget();
 
 	core::vector3df pos = camera->getPosition();
-	core::vector3df tvectX = pos - target;
+	const bool left = camera->getUseLeftHandProjection();
+	const core::vector3df posTarget = left
+		? pos - target
+		: target - pos;
+
+	core::vector3df tvectX = posTarget;
 	tvectX = tvectX.crossProduct(upVector);
 	tvectX.normalize_z();
 
 	const SViewFrustum* const va = camera->getViewFrustum();
 	core::vector3df tvectY = (va->getFarLeftDown() - va->getFarRightDown());
-	tvectY = tvectY.crossProduct(upVector.Y > 0 ? pos - target : target - pos);
-	tvectY.normalize_x();
+	tvectY = tvectY.crossProduct(upVector.Y > 0 ? posTarget : -posTarget);
+	tvectY.normalize();
 
 	if (isMouseKeyDown(2) && !Zooming)
 	{
@@ -239,7 +244,7 @@ void CSceneNodeAnimatorCameraMaya::animateNode(ISceneNode *node, u32 timeMs)
 	pos.X += nZoom;
 
 	pos.rotateXYBy(nRotY, translate);
-	pos.rotateXZBy(-nRotX, translate);
+	pos.rotateXZBy(left ? -nRotX : nRotX, translate);
 
 	camera->setPosition(pos);
 	camera->setTarget(translate);
@@ -249,7 +254,7 @@ void CSceneNodeAnimatorCameraMaya::animateNode(ISceneNode *node, u32 timeMs)
 	// jox: fixed bug: jitter when rotating to the top and bottom of y
 	pos.set(0,1,0);
 	pos.rotateXYBy(-nRotY);
-	pos.rotateXZBy(-nRotX+180.f);
+	pos.rotateXZBy((left ? -nRotX : nRotX )+180.f);
 	camera->setUpVector(pos);
 	LastCameraTarget = camera->getTarget();
 }
@@ -295,6 +300,15 @@ void CSceneNodeAnimatorCameraMaya::setDistance(f32 distance)
 	CurrentZoom=distance;
 }
 
+void CSceneNodeAnimatorCameraMaya::setRotX(f32 angle)
+{
+	RotX = angle;
+}
+
+void CSceneNodeAnimatorCameraMaya::setRotY(f32 angle)
+{
+	RotY = angle;
+}
 
 //! Gets the rotation speed
 f32 CSceneNodeAnimatorCameraMaya::getRotateSpeed() const
@@ -321,6 +335,16 @@ f32 CSceneNodeAnimatorCameraMaya::getZoomSpeed() const
 f32 CSceneNodeAnimatorCameraMaya::getDistance() const
 {
 	return CurrentZoom;
+}
+
+f32 CSceneNodeAnimatorCameraMaya::getRotX() const
+{
+	return RotX;
+}
+
+f32 CSceneNodeAnimatorCameraMaya::getRotY() const
+{
+	return RotY;
 }
 
 void CSceneNodeAnimatorCameraMaya::setTargetMinDistance(f32 minDistance)

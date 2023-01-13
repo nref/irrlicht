@@ -8,6 +8,7 @@
 
 #include "CSTLMeshFileLoader.h"
 #include "SMesh.h"
+#include "CIrrMeshFileLoader.h"
 #include "CDynamicMeshBuffer.h"
 #include "CMemoryFile.h"
 #include "SAnimatedMesh.h"
@@ -56,7 +57,7 @@ IAnimatedMesh* CSTLMeshFileLoader::createMesh(io::IReadFile* fileIn)
 	io::IReadFile* file = memoryFile ? memoryFile : fileIn;
 
 	SMesh* mesh = new SMesh();
-	CDynamicMeshBuffer* meshBuffer = new CDynamicMeshBuffer(video::EVT_STANDARD, video::EIT_16BIT);
+	CDynamicMeshBuffer* meshBuffer = new CDynamicMeshBuffer(irr::video::EVT_STANDARD, irr::video::EIT_32BIT);
 	IVertexBuffer& vertBuffer = meshBuffer->getVertexBuffer();
 	mesh->addMeshBuffer(meshBuffer);
 	meshBuffer->drop();
@@ -149,6 +150,8 @@ IAnimatedMesh* CSTLMeshFileLoader::createMesh(io::IReadFile* fileIn)
 #endif
 		}
 
+		CDynamicMeshBuffer* mb = reinterpret_cast<CDynamicMeshBuffer*>(mesh->getMeshBuffer(mesh->getMeshBufferCount()-1));
+		u32 vCount = mb->getVertexCount();
 		video::SColor color(0xffffffff);
 		if (attrib & 0x8000)
 			color = video::A1R5G5B5toA8R8G8B8(attrib);
@@ -157,6 +160,9 @@ IAnimatedMesh* CSTLMeshFileLoader::createMesh(io::IReadFile* fileIn)
 		vertBuffer.push_back(video::S3DVertex(vertex[2],normal,color, core::vector2df()));
 		vertBuffer.push_back(video::S3DVertex(vertex[1],normal,color, core::vector2df()));
 		vertBuffer.push_back(video::S3DVertex(vertex[0],normal,color, core::vector2df()));
+		mb->getIndexBuffer().push_back(vCount);
+		mb->getIndexBuffer().push_back(vCount+1);
+		mb->getIndexBuffer().push_back(vCount+2);
 	}	// end while (file->getPos() < filesize)
 
 	// Create the Animated mesh if there's anything in the mesh

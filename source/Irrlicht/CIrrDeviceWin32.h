@@ -74,6 +74,8 @@ namespace irr
 		/** Must be publis as it is called from free function (event handler) */
 		void OnResized();
 
+		bool ExitsOnClose() const { return CreationParams.ExitOnClose; }
+
 		//! Sets if the window should be resizable in windowed mode.
 		virtual void setResizable(bool resize=false) IRR_OVERRIDE;
 

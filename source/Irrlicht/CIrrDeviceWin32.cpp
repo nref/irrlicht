@@ -909,8 +909,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
+		{
+			dev = getDeviceFromHWnd(hWnd);
+			if (dev && dev->ExitsOnClose())
+			{
+				PostQuitMessage(0);
+			}
+			else
+			{
+				DestroyWindow(hWnd);
+			}
+
+			return 0;
+		}
 
 	case WM_SYSCOMMAND:
 		// prevent screensaver or monitor powersave mode from starting
@@ -1350,7 +1361,7 @@ bool CIrrDeviceWin32::present(video::IImage* image, void* windowId, core::rect<s
 //! notifies the device that it should close itself
 void CIrrDeviceWin32::closeDevice()
 {
-	if (!ExternalWindow)
+	if (!ExternalWindow && CreationParams.ExitOnClose)
 	{
 		MSG msg;
 		PeekMessage(&msg, NULL, WM_QUIT, WM_QUIT, PM_REMOVE);

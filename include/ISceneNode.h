@@ -52,7 +52,7 @@ namespace scene
 				Parent(0), SceneManager(mgr), TriangleSelector(0), ID(id),
 				UpdateAbsolutePosBehavior(ESNUA_TRANSFORM_MATRIX), AutomaticCullingState(EAC_BOX),
 				DebugDataVisible(EDS_OFF),
-				IsVisible(true), IsDebugObject(false)
+				IsVisible(true), IsDebugObject(false), UseAbsoluteTransformation(false)
 		{
 			if (parent)
 				parent->addChild(this);
@@ -680,6 +680,11 @@ namespace scene
 			hierarchy you might want to update the parents first.*/
 		virtual void updateAbsolutePosition()
 		{
+			if (UseAbsoluteTransformation)
+			{
+				return;
+			}
+
 			if (Parent)
 			{
 				if ( UpdateAbsolutePosBehavior == ESNUA_TRANSFORM_MATRIX )
@@ -697,6 +702,27 @@ namespace scene
 				AbsoluteTransformation = getRelativeTransformation();
 		}
 
+		virtual void setAbsoluteTransformation(const core::matrix4& m)
+		{
+			AbsoluteTransformation = m;
+		}
+
+		/** Ignore parent and relative transform when calculating absolute transformation. 
+			Instead, use the value given by setAbsoluteTransformation(bool).
+			
+			Call this once globally before calling setAbsoluteTransformation(bool), else
+			the absolute transformation will be overwritten on the next call to onAnimate(). */
+		virtual void setUseAbsoluteTransformation(const bool value)
+		{
+			UseAbsoluteTransformation = value;
+		}
+
+		//! If true, the parent and relative transformations have no effect.
+		//! If false, the parent and relative transformations have effect.
+		virtual bool getUseAbsoluteTransformation()
+		{
+			return UseAbsoluteTransformation;
+		}
 
 		//! Returns the parent of this scene node
 		/** \return A pointer to the parent. */
@@ -897,6 +923,8 @@ namespace scene
 
 		//! Is debug object?
 		bool IsDebugObject;
+
+		bool UseAbsoluteTransformation;
 	};
 
 
